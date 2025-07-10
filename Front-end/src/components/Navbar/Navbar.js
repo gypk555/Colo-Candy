@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Navbar.css";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
+
 
 const Navbar = () => {
   const [loggedIn, setLoggedIn] = useState(false); // State to track login status
@@ -26,7 +24,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(process.env.logout_url, {}, { withCredentials: true });
+      await axios.post(process.env.LOGOUT_URL, {}, { withCredentials: true });
       setLoggedIn(false); // Update state immediately
       navigate("/");
     } catch (error) {

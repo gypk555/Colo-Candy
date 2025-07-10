@@ -9,9 +9,6 @@ import Login from "./components/pages/Login/Login";
 import Register from "./components/pages/Register/Register";
 import Admin from "./components/Admin/Admin";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -30,7 +27,7 @@ function App() {
 
   // 2. Fetch session details from backend
   axios
-    .get(process.env.session_check_url, { withCredentials: true })
+    .get(process.env.SESSION_CHECK_URL, { withCredentials: true })
     .then((response) => {
       console.log("API Response:", response.data); // Debugging line
 

@@ -3,9 +3,6 @@ import "./Admin.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
 
 function Admin() {
   const [items, setItems] = useState([]); // Stores all items fetched from the database
@@ -20,7 +17,7 @@ function Admin() {
   const fetchItems = async () => {
     try {
       console.log("Fetching items from the database...");
-      const response = await axios.get(process.env.Admin_url);
+      const response = await axios.get(process.env.ADMIN_URL);
       setItems(response.data);
       console.log("Items fetched successfully:", response.data);
     } catch (error) {
@@ -43,7 +40,7 @@ function Admin() {
       console.log("Adding new item to the database...");
       console.log("sending api request to add item");
       console.log(formData.get("name"), formData.get("description"), formData.get("price"));
-      const response = await axios.post(process.env.Admin_url, formData, {
+      const response = await axios.post(process.env.ADMIN_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Item added successfully:", response.data);
@@ -60,7 +57,7 @@ function Admin() {
   const handleDeleteItem = async (id) => {
     try {
       console.log(`Deleting item with ID: ${id}`);
-      const response = await axios.delete(process.env.Admin_url, {data: { id }});
+      const response = await axios.delete(process.env.ADMIN_URL, {data: { id }});
       console.log("Item deleted successfully:", response.data);
       alert("Item deleted successfully!");
       fetchItems(); // Refresh the items list

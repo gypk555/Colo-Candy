@@ -5,9 +5,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./ProductGrid.css";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
+
 
 // const products = [
 //   {
@@ -105,7 +103,7 @@ const ProductGrid = () => {
   const fetchItems = async () => {
     try {
       console.log("Fetching items from the database...");
-      const response = await axios.get(process.env.Admin_url);
+      const response = await axios.get(process.env.ADMIN_URL);
       setItems(response.data);
       items=response.data;
       console.log("Items fetched successfully:", response.data);
