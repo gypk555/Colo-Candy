@@ -5,9 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
+
 
 
 const Register = () => {
@@ -31,7 +29,7 @@ const Register = () => {
         if(user_inputs.c_password===user_inputs.password){
             try{
               alert("data is sending");
-                const res=await axios.post(process.env.signup_url, user_inputs);
+                const res=await axios.post(process.env.SIGNUP_URL, user_inputs);
                 if(res.data==='error' || res.data==="Username already exists.Please choose different one"){
                     alert(res.data);
                 }

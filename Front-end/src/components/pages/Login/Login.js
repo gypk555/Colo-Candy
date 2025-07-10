@@ -3,9 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
+
 
 const Login = ({ setLoggedIn, setUserRole }) => {
   const navigate = useNavigate();
@@ -17,7 +15,7 @@ const Login = ({ setLoggedIn, setUserRole }) => {
 
   useEffect(() => {
     axios
-      .get(process.env.session_check_url, { withCredentials: true })
+      .get(process.env.SESSION_CHECK_URL, { withCredentials: true })
       .then((response) => {
         if (response.data.loggedIn) {
           console.log("User role from API in Login.js:", response.data.user.role);
@@ -30,7 +28,7 @@ const Login = ({ setLoggedIn, setUserRole }) => {
 
   // useEffect(() => {
   //   axios
-  //     .get(process.session_check_url, { withCredentials: true })
+  //     .get(process.SESSION_CHECK_URL, { withCredentials: true })
   //     .then((response) => {
   //       if (response.data.loggedIn) {
   //         console.log("Before API call, logged in role in login.js :", response.data.loggedIn);

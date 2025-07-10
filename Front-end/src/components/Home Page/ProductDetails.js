@@ -3,9 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import "./ProductDetails.css";
 // import { items } from "./Product";
 
-import {} from 'dotenv/config';
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Explicitly load .env file
+
 
 // var products=items;
 
