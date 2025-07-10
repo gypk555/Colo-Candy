@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://colo-candy-vc1b.onrender.com/sitemap.xml
