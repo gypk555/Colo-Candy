@@ -8,7 +8,7 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(process.env.LOGOUT_URL, {}, { withCredentials: true });
+      await axios.post(process.env.REACT_APP_LOGOUT_URL, {}, { withCredentials: true });
       alert("Logged out successfully!");
       Navigate("/");
     } catch (error) {

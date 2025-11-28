@@ -1,115 +1,24 @@
-
-// import {React} from "react";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./ProductGrid.css";
-
-
-
-// const products = [
-//   {
-//     id: 1,
-//     name: "Dark Brown Stitchless Stripes Polo T-Shirt",
-//     price: "INR 1,399",
-//     sizes: ["S", "M", "L", "XL", "XXL"],
-//     image: "#", // Replace with actual image URLs
-//   },
-//   {
-//     id: 2,
-//     name: "Olive Stitchless Stripes Polo T-Shirt",
-//     price: "INR 1,399",
-//     sizes: ["S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 3,
-//     name: "Brown Stitchless Stripes Polo T-Shirt",
-//     price: "INR 1,399",
-//     sizes: ["S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 4,
-//     name: "Grey Slim Fit Jeans",
-//     price: "INR 1,699",
-//     sizes: ["30", "32", "34", "36", "38"],
-//     image: "#",
-//   },
-//   {
-//     id: 5,
-//     name: "Black Graphic Print Oversized Fit T-Shirt",
-//     price: "INR 1,099",
-//     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 6,
-//     name: "Grey Slim Fit Jeans",
-//     price: "INR 1,699",
-//     sizes: ["30", "32", "34", "36", "38"],
-//     image: "#",
-//   },
-//   {
-//     id: 7,
-//     name: "Black Graphic Print Oversized Fit T-Shirt",
-//     price: "INR 1,099",
-//     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 8,
-//     name: "Grey Slim Fit Jeans",
-//     price: "INR 1,699",
-//     sizes: ["30", "32", "34", "36", "38"],
-//     image: "#",
-//   },
-//   {
-//     id: 9,
-//     name: "Black Graphic Print Oversized Fit T-Shirt",
-//     price: "INR 1,099",
-//     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 10,
-//     name: "Grey Slim Fit Jeans",
-//     price: "INR 1,699",
-//     sizes: ["30", "32", "34", "36", "38"],
-//     image: "#",
-//   },
-//   {
-//     id: 11,
-//     name: "Black Graphic Print Oversized Fit T-Shirt",
-//     price: "INR 1,099",
-//     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   },
-//   {
-//     id: 12,
-//     name: "Black Graphic Print Oversized Fit T-Shirt",
-//     price: "INR 1,099",
-//     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-//     image: "#",
-//   }
-// ];
-
-var items=[];
 
 const ProductGrid = () => {
   const navigate = useNavigate();
-  const [products, setItems] = useState([]); // Stores all items fetched from the database
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   // Fetch items from the database
   const fetchItems = async () => {
     try {
-      console.log("Fetching items from the database...");
-      const response = await axios.get(process.env.ADMIN_URL);
-      setItems(response.data);
-      items=response.data;
-      console.log("Items fetched successfully:", response.data);
-      console.log("these are the items ", items);
+      setLoading(true);
+      setError("");
+      const response = await axios.get(process.env.REACT_APP_ADMIN_URL);
+      setProducts(response.data);
     } catch (error) {
-      console.error("Error fetching items:", error.response?.data || error.message);
+      setError("Failed to load products. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,38 +27,60 @@ const ProductGrid = () => {
     fetchItems();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-xl text-gray-600">Loading products...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[60vh] gap-4">
+        <div className="text-xl text-red-600">{error}</div>
+        <button
+          onClick={fetchItems}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-xl text-gray-600">No products available yet.</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="product-grid">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5 min-h-[60vh]">
       {products.map((product) => (
-        <div className="product-card" 
+        <div
+          className="flex flex-col items-center border border-gray-300 rounded-lg overflow-hidden bg-white transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer shadow-sm hover:shadow-md"
           key={product.id}
           onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-          style={{ cursor: "pointer" }}
         >
-          {/* <img src={product.image} alt={product.name} className="product-image"/> */}
+          {product.image && (
+            <img
+              className="w-full h-[250px] md:h-[200px] object-cover"
+              src={`data:image/jpeg;base64,${product.image}`}
+              alt={product.name}
+            />
+          )}
 
-          { /*{item.imageUrl && <img src={item.imageUrl} alt={item.name} style={{ width: "100px" }} />} */}
-              {product.image && (
-                <img className="product-image"
-                  src={`data:image/jpeg;base64,${product.image}`}
-                  alt={product.name}
-                  style={{ width: "100px" }}
-                />
-              )}
-
-
-          <div className="product-info">
-            <h3 className="product-name">{product.name}</h3>
-            <p className="product-price">INR {product.price}</p>
-            {/* <div className="product-sizes">
-              {product.sizes.map((size) => (
-                <span key={size} className="product-size">
-                  {size}
-                </span>
-              ))}       
-            </div> */}
-            <p>{product.description}</p>
+          <div className="p-2.5 text-center w-full">
+            <h3 className="text-base font-bold mb-2.5 truncate" title={product.name}>
+              {product.name}
+            </h3>
+            <p className="text-gray-600 mb-2.5 font-semibold">INR {product.price}</p>
+            <p className="text-sm text-gray-700 line-clamp-2" title={product.description}>
+              {product.description}
+            </p>
           </div>
         </div>
       ))}
@@ -157,5 +88,4 @@ const ProductGrid = () => {
   );
 };
 
-// export {ProductGrid};
-export {ProductGrid, items};
+export { ProductGrid };

@@ -1,33 +1,30 @@
-import { addUser } from "../models/sigupModels.js";
+import { addUser } from "../models/signupModels.js";
 
 const signup = async (req, res) =>{
-    
+
     try{
-        console.log("signup request recieved ");
-        var x="";
-        let fullname=req.body.fullname;
-        // let lastname=req.body.lname;
-        let username=req.body.uname;
-        let email=req.body.email;
-        let phoneNo=req.body.number
-        let password=req.body.password;
+        console.log("signup request received");
+        const fullname = req.body.fullname;
+        const username = req.body.uname;
+        const email = req.body.email;
+        const phoneNo = req.body.number;
+        const password = req.body.password;
         console.log("I am from signup in signupController.js ");
-        // const {}  
+
         const newUser = await addUser(fullname, username, email, phoneNo, password);
-        console.log("this is nwe user", newUser);
-        res.send(newUser);
-        if(newUser==="successfully registered"){
-            console.log("verifying x in signupController.js ",x);
-            res.status(201);
+        console.log("this is new user", newUser);
+
+        if(newUser === "successfully registered"){
+            res.status(201).json({ message: newUser });
+        } else {
+            res.status(400).json({ error: newUser });
         }
 
-
     }catch(err){
-        x="error";
-        console.log("in catch block "+err);
-        res.send(x);
+        console.log("in catch block " + err);
+        res.status(500).json({ error: "Internal server error" });
     }
-    
+
 };
 
 

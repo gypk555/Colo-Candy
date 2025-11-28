@@ -1,60 +1,84 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAtomValue, useSetAtom } from "jotai";
 import axios from "axios";
-import "./Navbar.css";
-
-
+import { isLoggedInAtom, isAdminAtom, usernameAtom, authActionsAtom } from "../../atoms/authAtoms";
 
 const Navbar = () => {
-  const [loggedIn, setLoggedIn] = useState(false); // State to track login status
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check session status when the component mounts
-    axios
-      .get(process.env.session_check_url, { withCredentials: true })
-      .then((response) => {
-        if (response.data.loggedIn) {
-          setLoggedIn(true);
-        }
-      })
-      .catch((err) => console.error("Session check error:", err));
-  }, []);
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const isAdmin = useAtomValue(isAdminAtom);
+  const username = useAtomValue(usernameAtom);
+  const { logout } = useSetAtom(authActionsAtom);
 
   const handleLogout = async () => {
     try {
-      await axios.post(process.env.LOGOUT_URL, {}, { withCredentials: true });
-      setLoggedIn(false); // Update state immediately
+      await axios.post(process.env.REACT_APP_LOGOUT_URL, {}, { withCredentials: true });
+      logout();
       navigate("/");
     } catch (error) {
-      console.error("Logout error:", error.response?.data || error.message);
+      // Logout failed, but still clear state and redirect
+      logout();
+      navigate("/");
     }
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-logo" onClick={() => navigate("/")}>
+    <nav className="flex flex-col md:flex-row items-start md:items-center justify-between bg-zinc-800 text-white px-5 py-2.5">
+      <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
         MyWebsite
       </div>
-      <form className="navbar-search" onSubmit={(e) => e.preventDefault()}>
-        <input type="text" placeholder="Search..." className="search-input" />
-        <button type="submit" className="search-button">🔍</button>
+
+      <form className="flex flex-row items-center w-full md:w-auto mt-2.5 md:mt-0" onSubmit={(e) => e.preventDefault()}>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="py-1.5 px-2.5 border border-zinc-300 border-r-0 rounded-l outline-none flex-1 md:flex-none md:w-auto text-black"
+        />
+        <button type="submit" className="bg-blue-600 text-white border border-blue-600 rounded-r py-1.5 px-4 cursor-pointer hover:bg-blue-700 transition-colors">
+          🔍
+        </button>
       </form>
 
-      <button className="navbar-cart">🛒 <span className="cart-count">0</span></button>
+      <button className="bg-transparent text-white border-0 text-lg cursor-pointer relative hover:scale-110 transition-transform">
+        🛒 <span className="absolute -top-1 -right-2.5 bg-red-600 text-white rounded-full text-xs px-1.5 py-0.5">0</span>
+      </button>
 
-      <div className="navbar-links">
-        {loggedIn ? (
-          <button className="navbar-btn" onClick={handleLogout}>
-            Logout
-          </button>
+      <div className="flex flex-col md:flex-row items-center gap-2.5 md:gap-4 w-full md:w-auto mt-2.5 md:mt-0">
+        {isLoggedIn ? (
+          <>
+            {username && (
+              <span className="text-sm text-gray-300">
+                Welcome, {username}
+              </span>
+            )}
+            {isAdmin && (
+              <button
+                className="bg-transparent text-white border border-white py-1.5 px-2.5 rounded cursor-pointer hover:bg-white hover:text-zinc-800 transition-colors"
+                onClick={() => navigate("/admin")}
+              >
+                Admin Dashboard
+              </button>
+            )}
+            <button
+              className="bg-transparent text-white border border-white py-1.5 px-2.5 rounded cursor-pointer hover:bg-white hover:text-zinc-800 transition-colors"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </>
         ) : (
           <>
-            <button className="navbar-btn" onClick={() => navigate("/login")}>
+            <button
+              className="bg-transparent text-white border border-white py-1.5 px-2.5 rounded cursor-pointer hover:bg-white hover:text-zinc-800 transition-colors"
+              onClick={() => navigate("/login")}
+            >
               Login
             </button>
-            <button className="navbar-btn" onClick={() => navigate("/register")}>
+            <button
+              className="bg-transparent text-white border border-white py-1.5 px-2.5 rounded cursor-pointer hover:bg-white hover:text-zinc-800 transition-colors"
+              onClick={() => navigate("/register")}
+            >
               Register
             </button>
           </>
