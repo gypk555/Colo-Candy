@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { isLoggedInAtom, userRoleAtom, loginAtom } from "../../../atoms/authAtoms";
+import { cartAtom, cartDirtyAtom } from "../../../atoms/cartAtoms";
+import { fetchCartFromBackend, mergeCarts, syncCartToBackend } from "../../../services/cartSyncService";
 
 const Login = () => {
   const navigate = useNavigate();
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const userRole = useAtomValue(userRoleAtom);
   const login = useSetAtom(loginAtom);
+  const [cart, setCart] = useAtom(cartAtom);
+  const setCartDirty = useSetAtom(cartDirtyAtom);
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -48,6 +52,22 @@ const Login = () => {
 
       // Update auth state using atom action
       login(response.data.user);
+
+      // Fetch cart from database
+      const { success, cart: dbCart } = await fetchCartFromBackend();
+
+      if (success) {
+        // Merge localStorage cart with database cart
+        const localCart = cart;
+        const mergedCart = mergeCarts(localCart, dbCart);
+
+        // Update local cart with merged data
+        setCart(mergedCart);
+
+        // Sync merged cart back to database
+        await syncCartToBackend(mergedCart);
+        setCartDirty(false); // Mark as clean after sync
+      }
 
       // Redirect based on role
       const role = response.data.user.role;

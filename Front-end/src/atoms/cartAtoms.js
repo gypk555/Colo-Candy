@@ -6,11 +6,15 @@ import { atomWithStorage } from 'jotai/utils';
  *
  * These atoms manage shopping cart state across the application.
  * Using atomWithStorage for persistence across page refreshes.
+ * Syncs with backend database with debouncing strategy.
  */
 
 // Cart items atom - stores array of cart items with quantity
 // Each item: { id, name, price, image, description, quantity }
 export const cartAtom = atomWithStorage('cart', []);
+
+// Dirty flag - tracks if cart has unsaved changes
+export const cartDirtyAtom = atom(false);
 
 // Derived atom - total number of items in cart
 export const cartItemCountAtom = atom(
@@ -47,6 +51,8 @@ export const addToCartAtom = atom(
       // New item, add with quantity 1
       set(cartAtom, [...cart, { ...product, quantity: 1 }]);
     }
+    // Mark cart as dirty (needs sync)
+    set(cartDirtyAtom, true);
   }
 );
 
@@ -56,6 +62,8 @@ export const removeFromCartAtom = atom(
   (get, set, productId) => {
     const cart = get(cartAtom);
     set(cartAtom, cart.filter(item => item.id !== productId));
+    // Mark cart as dirty (needs sync)
+    set(cartDirtyAtom, true);
   }
 );
 
@@ -73,6 +81,8 @@ export const updateCartQuantityAtom = atom(
       );
       set(cartAtom, updatedCart);
     }
+    // Mark cart as dirty (needs sync)
+    set(cartDirtyAtom, true);
   }
 );
 
@@ -81,5 +91,7 @@ export const clearCartAtom = atom(
   null,
   (get, set) => {
     set(cartAtom, []);
+    // Mark cart as dirty (needs sync)
+    set(cartDirtyAtom, true);
   }
 );
