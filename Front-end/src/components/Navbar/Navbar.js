@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
 import axios from "axios";
 import { isLoggedInAtom, isAdminAtom, usernameAtom, logoutAtom } from "../../atoms/authAtoms";
+import { cartItemCountAtom } from "../../atoms/cartAtoms";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Navbar = () => {
   const isAdmin = useAtomValue(isAdminAtom);
   const username = useAtomValue(usernameAtom);
   const logout = useSetAtom(logoutAtom);
+  const cartItemCount = useAtomValue(cartItemCountAtom);
 
   const handleLogout = async () => {
     try {
@@ -40,8 +42,11 @@ const Navbar = () => {
         </button>
       </form>
 
-      <button className="bg-transparent text-white border-0 text-lg cursor-pointer relative hover:scale-110 transition-transform">
-        🛒 <span className="absolute -top-1 -right-2.5 bg-red-600 text-white rounded-full text-xs px-1.5 py-0.5">0</span>
+      <button
+        className="bg-transparent text-white border-0 text-lg cursor-pointer relative hover:scale-110 transition-transform"
+        onClick={() => navigate("/cart")}
+      >
+        🛒 <span className="absolute -top-1 -right-2.5 bg-red-600 text-white rounded-full text-xs px-1.5 py-0.5">{cartItemCount}</span>
       </button>
 
       <div className="flex flex-col md:flex-row items-center gap-2.5 md:gap-4 w-full md:w-auto mt-2.5 md:mt-0">

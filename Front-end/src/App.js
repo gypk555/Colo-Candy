@@ -9,6 +9,7 @@ import Footer from "./components/Footer/Footer";
 import Login from "./components/pages/Login/Login";
 import Register from "./components/pages/Register/Register";
 import Admin from "./components/Admin/Admin";
+import Cart from "./components/pages/Cart/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { userAtom, isLoggedInAtom } from "./atoms/authAtoms";
 
@@ -46,6 +47,7 @@ function App() {
           <Routes>
             <Route path="/" element={<ProductGrid />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/cart" element={<Cart />} />
 
             {/* Prevent logged-in users from accessing the Register page */}
             <Route
