@@ -1,5 +1,4 @@
-// import { pool } from "../config/db.js";
-import pool from "../config/db.js"
+import pool from "../config/db.js";
 
 const getItems = async () => {
   const result = await pool.query("SELECT * FROM items");
@@ -7,7 +6,7 @@ const getItems = async () => {
 };
 
 const addItem = async (name, description, price, image) => {
-  console.log("I am from addItem function inserting item into database ");
+  console.log("Inserting item into database");
   const result = await pool.query(
     "INSERT INTO items (name, description, price, image) VALUES ($1, $2, $3, $4) RETURNING *",
     [name, description, price, image]

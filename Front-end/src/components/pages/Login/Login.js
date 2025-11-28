@@ -1,116 +1,117 @@
-import "./Login.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAtomValue, useSetAtom } from "jotai";
+import { isLoggedInAtom, userRoleAtom, authActionsAtom } from "../../../atoms/authAtoms";
 
-
-
-const Login = ({ setLoggedIn, setUserRole }) => {
+const Login = () => {
   const navigate = useNavigate();
-  const [credentials, update_credentials] = useState({
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const userRole = useAtomValue(userRoleAtom);
+  const { login } = useSetAtom(authActionsAtom);
+
+  const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
-
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(process.env.SESSION_CHECK_URL, { withCredentials: true })
-      .then((response) => {
-        if (response.data.loggedIn) {
-          console.log("User role from API in Login.js:", response.data.user.role);
-          navigate(response.data.user.role === "admin" ? "/admin" : "/");
-        }
-      })
-      .catch((err) => console.error("Session check error:", err));
-  }, [navigate]);
-  
+    // If already logged in, redirect
+    if (isLoggedIn) {
+      navigate(userRole === "admin" ? "/admin" : "/");
+    }
+  }, [isLoggedIn, userRole, navigate]);
 
-  // useEffect(() => {
-  //   axios
-  //     .get(process.SESSION_CHECK_URL, { withCredentials: true })
-  //     .then((response) => {
-  //       if (response.data.loggedIn) {
-  //         console.log("Before API call, logged in role in login.js :", response.data.loggedIn);
-  //         console.log("before api call, user role in login.js  ", response.data.userRole);
-  //         // setUser(response.data.user);
-  //         localStorage.setItem("userRole", response.data.user.role); // Ensure storage update
-  //         console.log("user role is ", response.data.user.role);
-  //         navigate(response.data.user.role === "admin" ? "/admin" : "/");
-  //       }
-  //     })
-  //     .catch((err) => console.error("Session check error:", err));
-  // }, [navigate]);
-
-  function handle_logdetails(event) {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    update_credentials((previous) => ({
-      ...previous,
+    setCredentials((prev) => ({
+      ...prev,
       [name]: value,
     }));
-  }
+    // Clear error when user starts typing
+    if (error) setError("");
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (credentials.username !== "" && credentials.password !== "") {
-      try {
-        console.log("Sending login data to the backend...");
-        const response = await axios.post(
-          process.env.login_url,
-          credentials,
-          { withCredentials: true }
-        );
+    setError("");
+    setLoading(true);
 
-        console.log("login.js line 62, Response data: ", response.data);
-        console.log("login.js line 63, Role from response: ", response.data.user.role);
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_LOGIN_URL,
+        credentials,
+        { withCredentials: true }
+      );
 
-        // Redirect based on role
-        const role = response.data.user.role;
-        navigate(role === "admin" ? "/admin" : "/");
+      // Update auth state using atom action
+      login(response.data.user);
 
-        // setLoggedIn(true); // Update state immediately
-        // setUserRole(response.data.user.role); // Store role
-        // localStorage.setItem("userRole", response.data.user.role); // Ensure role is stored
-        // console.log("user role is login.js code ", response.data.user.role);
-        // console.log("set usr role is login.js code ", setUserRole);
-        // console.log("set logged in value in login.js is ", setLoggedIn);
-        // console.log("set user role value in login.js is ", setUserRole);
-        // navigate(response.data.user.role === "admin" ? "/admin" : "/");
-        // const role = response.data.user.role;
-        // navigate(role === "admin" ? "/admin" : "/");
-      } catch (error) {
-        console.error("Login Error:", error.response?.data || error.message);
-        alert("Login failed. Please check your credentials.");
-      }
+      // Redirect based on role
+      const role = response.data.user.role;
+      navigate(role === "admin" ? "/admin" : "/");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data ||
+                          "Login failed. Please check your credentials.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label>Username:</label>
+    <div className="flex flex-col items-center justify-center min-h-[80vh] p-5">
+      <h2 className="text-2xl font-bold mb-6">Login</h2>
+      <form onSubmit={handleLogin} className="w-full max-w-md flex flex-col gap-4">
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
+
+        <div className="flex flex-col">
+          <label className="text-sm mb-1">Username:</label>
           <input
             type="text"
             name="username"
             placeholder="Enter your username"
-            onChange={handle_logdetails}
+            value={credentials.username}
+            onChange={handleInputChange}
             required
+            className="p-2.5 border border-gray-300 rounded w-full outline-none focus:border-blue-500"
           />
         </div>
-        <div className="form-group">
-          <label>Password:</label>
+
+        <div className="flex flex-col">
+          <label className="text-sm mb-1">Password:</label>
           <input
             type="password"
             name="password"
             placeholder="Enter your password"
-            onChange={handle_logdetails}
+            value={credentials.password}
+            onChange={handleInputChange}
             required
+            className="p-2.5 border border-gray-300 rounded w-full outline-none focus:border-blue-500"
           />
         </div>
-        <button type="submit" className="login-button">
-          Login
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="p-2.5 bg-zinc-800 text-white border-none rounded cursor-pointer w-full hover:bg-zinc-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        <button
+          type="button"
+          className="bg-transparent text-black border-none h-8 cursor-pointer hover:underline"
+          onClick={() => navigate("/register")}
+        >
+          Don't have an account? Register
         </button>
       </form>
     </div>
