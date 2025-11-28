@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
-import { isLoggedInAtom, userRoleAtom, authActionsAtom } from "../../../atoms/authAtoms";
+import { isLoggedInAtom, userRoleAtom, loginAtom } from "../../../atoms/authAtoms";
 
 const Login = () => {
   const navigate = useNavigate();
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const userRole = useAtomValue(userRoleAtom);
-  const { login } = useSetAtom(authActionsAtom);
+  const login = useSetAtom(loginAtom);
 
   const [credentials, setCredentials] = useState({
     username: "",

@@ -2,14 +2,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
 import axios from "axios";
-import { isLoggedInAtom, isAdminAtom, usernameAtom, authActionsAtom } from "../../atoms/authAtoms";
+import { isLoggedInAtom, isAdminAtom, usernameAtom, logoutAtom } from "../../atoms/authAtoms";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const username = useAtomValue(usernameAtom);
-  const { logout } = useSetAtom(authActionsAtom);
+  const logout = useSetAtom(logoutAtom);
 
   const handleLogout = async () => {
     try {
