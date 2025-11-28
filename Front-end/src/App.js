@@ -40,30 +40,34 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<ProductGrid />} />
-        <Route path="/login" element={<Login />} />
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<ProductGrid />} />
+            <Route path="/login" element={<Login />} />
 
-        {/* Prevent logged-in users from accessing the Register page */}
-        <Route
-          path="/register"
-          element={isLoggedIn ? <Navigate to="/" /> : <Register />}
-        />
+            {/* Prevent logged-in users from accessing the Register page */}
+            <Route
+              path="/register"
+              element={isLoggedIn ? <Navigate to="/" /> : <Register />}
+            />
 
-        {/* Protected Admin Route */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requireAdmin>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
+            {/* Protected Admin Route */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="/product/:id" element={<ProductDetails />} />
-      </Routes>
-      <Footer />
+            <Route path="/product/:id" element={<ProductDetails />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }
