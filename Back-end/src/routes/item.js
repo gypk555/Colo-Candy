@@ -4,6 +4,7 @@ import multer from "multer";
 import { getAllItems, createItem, removeItem } from "../controllers/itemController.js";
 import { signup } from "../controllers/signupController.js";
 import { login, checkSession, logout } from "../controllers/loginController.js";
+import { getCart, syncCart } from "../controllers/cartController.js";
 
 const router = express.Router();
 
@@ -18,5 +19,9 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.get("/check-session", checkSession);
 router.post("/logout", logout);
+
+// Cart routes
+router.get("/cart", getCart);
+router.post("/cart/sync", syncCart);
 
 export default router;

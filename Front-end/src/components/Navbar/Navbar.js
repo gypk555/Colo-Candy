@@ -1,9 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import axios from "axios";
 import { isLoggedInAtom, isAdminAtom, usernameAtom, logoutAtom } from "../../atoms/authAtoms";
-import { cartItemCountAtom } from "../../atoms/cartAtoms";
+import { cartAtom, cartItemCountAtom, cartDirtyAtom } from "../../atoms/cartAtoms";
+import { syncCartToBackend } from "../../services/cartSyncService";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,10 +12,18 @@ const Navbar = () => {
   const isAdmin = useAtomValue(isAdminAtom);
   const username = useAtomValue(usernameAtom);
   const logout = useSetAtom(logoutAtom);
+  const cart = useAtomValue(cartAtom);
   const cartItemCount = useAtomValue(cartItemCountAtom);
+  const [isDirty, setIsDirty] = useAtom(cartDirtyAtom);
 
   const handleLogout = async () => {
     try {
+      // Sync cart to database before logout if there are unsaved changes
+      if (isDirty) {
+        await syncCartToBackend(cart);
+        setIsDirty(false);
+      }
+
       await axios.post(process.env.REACT_APP_LOGOUT_URL, {}, { withCredentials: true });
       logout();
       navigate("/");

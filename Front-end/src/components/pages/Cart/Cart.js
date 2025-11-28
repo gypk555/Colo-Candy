@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   cartAtom,
   cartTotalAtom,
+  cartDirtyAtom,
   removeFromCartAtom,
   updateCartQuantityAtom,
   clearCartAtom
 } from "../../../atoms/cartAtoms";
+import { isLoggedInAtom } from "../../../atoms/authAtoms";
+import { syncCartToBackend } from "../../../services/cartSyncService";
 
 const Cart = () => {
   const navigate = useNavigate();
   const cart = useAtomValue(cartAtom);
   const cartTotal = useAtomValue(cartTotalAtom);
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const [isDirty, setIsDirty] = useAtom(cartDirtyAtom);
   const removeFromCart = useSetAtom(removeFromCartAtom);
   const updateQuantity = useSetAtom(updateCartQuantityAtom);
   const clearCart = useSetAtom(clearCartAtom);
+  const [syncing, setSyncing] = useState(false);
 
   const handleQuantityChange = (productId, newQuantity) => {
     const quantity = parseInt(newQuantity);
@@ -28,6 +34,24 @@ const Cart = () => {
     if (window.confirm("Are you sure you want to clear your cart?")) {
       clearCart();
     }
+  };
+
+  const handleProceedToCheckout = async () => {
+    // Sync cart to database before checkout if user is logged in
+    if (isLoggedIn && isDirty) {
+      setSyncing(true);
+      try {
+        await syncCartToBackend(cart);
+        setIsDirty(false);
+      } catch (error) {
+        console.error('Failed to sync cart before checkout:', error);
+      } finally {
+        setSyncing(false);
+      }
+    }
+
+    // Navigate to checkout page (to be implemented)
+    alert("Checkout functionality coming soon!");
   };
 
   if (cart.length === 0) {
@@ -145,8 +169,12 @@ const Cart = () => {
               </div>
             </div>
 
-            <button className="w-full py-3 bg-green-600 text-white rounded font-semibold hover:bg-green-700 transition-colors mb-3">
-              Proceed to Checkout
+            <button
+              className="w-full py-3 bg-green-600 text-white rounded font-semibold hover:bg-green-700 transition-colors mb-3 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              onClick={handleProceedToCheckout}
+              disabled={syncing}
+            >
+              {syncing ? 'Syncing cart...' : 'Proceed to Checkout'}
             </button>
 
             <button

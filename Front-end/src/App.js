@@ -12,10 +12,14 @@ import Admin from "./components/Admin/Admin";
 import Cart from "./components/pages/Cart/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { userAtom, isLoggedInAtom } from "./atoms/authAtoms";
+import { useCartSync } from "./hooks/useCartSync";
 
 function App() {
   const [user, setUser] = useAtom(userAtom);
   const isLoggedIn = useAtomValue(isLoggedInAtom);
+
+  // Initialize cart sync (2-min intervals + beforeunload)
+  useCartSync();
 
   useEffect(() => {
     // Check session on app mount
