@@ -1,69 +1,70 @@
-import "./Admin.css";
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-
 function Admin() {
-  const [items, setItems] = useState([]); // Stores all items fetched from the database
+  const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState({
     name: "",
     description: "",
     price: "",
-    image: null, // For storing the selected image
+    image: null,
   });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Fetch items from the database
   const fetchItems = async () => {
     try {
-      console.log("Fetching items from the database...");
-      const response = await axios.get(process.env.ADMIN_URL);
+      const response = await axios.get(process.env.REACT_APP_ADMIN_URL);
       setItems(response.data);
-      console.log("Items fetched successfully:", response.data);
     } catch (error) {
-      console.error("Error fetching items:", error.response?.data || error.message);
+      setError("Failed to fetch items. Please try again.");
     }
   };
 
   // Add a new item to the database
   const handleAddItem = async (e) => {
     e.preventDefault();
-    console.log("item info before sending api request ");
-    console.log(newItem.name, newItem.author,newItem.description,newItem.price);
-    const formData = new FormData(); // For sending image and data together
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    const formData = new FormData();
     formData.append("name", newItem.name);
     formData.append("description", newItem.description);
     formData.append("price", newItem.price);
     formData.append("image", newItem.image);
 
     try {
-      console.log("Adding new item to the database...");
-      console.log("sending api request to add item");
-      console.log(formData.get("name"), formData.get("description"), formData.get("price"));
-      const response = await axios.post(process.env.ADMIN_URL, formData, {
+      await axios.post(process.env.REACT_APP_ADMIN_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Item added successfully:", response.data);
-      alert("Item added successfully!");
-      fetchItems(); // Refresh the items list
-      setNewItem({ name: "", description: "", price: "", image:null}); // Reset the form
+      setSuccess("Item added successfully!");
+      fetchItems();
+      setNewItem({ name: "", description: "", price: "", image: null });
+      // Clear file input
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = "";
     } catch (error) {
-      console.error("Error adding item:", error.response?.data || error.message);
-      alert("Failed to add item. Please try again.");
+      setError(error.response?.data?.message || "Failed to add item. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   // Delete an item from the database
   const handleDeleteItem = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) {
+      return;
+    }
+
     try {
-      console.log(`Deleting item with ID: ${id}`);
-      const response = await axios.delete(process.env.ADMIN_URL, {data: { id }});
-      console.log("Item deleted successfully:", response.data);
-      alert("Item deleted successfully!");
-      fetchItems(); // Refresh the items list
+      await axios.delete(process.env.REACT_APP_ADMIN_URL, { data: { id } });
+      setSuccess("Item deleted successfully!");
+      fetchItems();
     } catch (error) {
-      console.error("Error deleting item:", error.response?.data || error.message);
-      alert("Failed to delete item. Please try again.");
+      setError(error.response?.data?.message || "Failed to delete item. Please try again.");
     }
   };
 
@@ -76,10 +77,9 @@ function Admin() {
   // Handle image file input change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if(file){
-      setNewItem({ ...newItem, image: file});
+    if (file) {
+      setNewItem({ ...newItem, image: file });
     }
-    // setNewItem({ ...newItem, image: e.target.files[0] });
   };
 
   // Fetch items on component mount
@@ -87,13 +87,37 @@ function Admin() {
     fetchItems();
   }, []);
 
+  // Auto-dismiss messages after 5 seconds
+  useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError("");
+        setSuccess("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
+
   return (
-    <div style={{ padding: "20px" }} className="Admin-dassboard">
-      <h2>Admin Dashboard</h2>
+    <div className="flex flex-col items-center bg-gray-200 p-5 min-h-screen">
+      <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+
+      {/* Error/Success Messages */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 max-w-md w-full" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 max-w-md w-full" role="alert">
+          <span className="block sm:inline">{success}</span>
+        </div>
+      )}
 
       {/* Form to add a new item */}
-      <form onSubmit={handleAddItem} style={{ marginBottom: "20px" }} className="form-style">
-        <h3>Add New Item</h3>
+      <form onSubmit={handleAddItem} className="flex flex-col gap-3 p-5 px-12 bg-white rounded shadow-md mb-5 w-full max-w-md">
+        <h3 className="flex justify-center text-xl font-semibold">Add New Item</h3>
         <input
           type="text"
           name="name"
@@ -101,6 +125,7 @@ function Admin() {
           value={newItem.name}
           onChange={handleInputChange}
           required
+          className="h-8 rounded border-2 border-cyan-200 px-2 outline-none focus:border-cyan-400"
         />
         <textarea
           name="description"
@@ -108,6 +133,7 @@ function Admin() {
           value={newItem.description}
           onChange={handleInputChange}
           required
+          className="h-12 rounded border-2 border-cyan-200 px-2 py-1 outline-none focus:border-cyan-400 resize-none"
         />
         <input
           type="number"
@@ -116,46 +142,66 @@ function Admin() {
           value={newItem.price}
           onChange={handleInputChange}
           required
+          min="0"
+          step="0.01"
+          className="h-8 rounded border-2 border-cyan-200 px-2 outline-none focus:border-cyan-400"
         />
-        <input type="file" name="image" onChange={handleImageChange} required />
-        <button type="submit" className="Add-button">Add Item</button>
+        <input
+          type="file"
+          name="image"
+          onChange={handleImageChange}
+          required
+          accept="image/*"
+          className="h-8"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-green-600 text-white border-none rounded h-10 cursor-pointer hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {loading ? "Adding..." : "Add Item"}
+        </button>
       </form>
 
       {/* List of items with options for CRUD operations */}
-      <h3>Manage Items</h3>
-      <div>
-        <div className="items-Display-headings">
-          <h4>Name</h4>  
-          <h4>Description</h4>  
-          <h4>Price</h4>
-          {/* <h4>Image</h4>   */}
-          <h4>Action</h4> 
+      <h3 className="text-xl font-semibold mb-3">Manage Items</h3>
+      <div className="w-full max-w-6xl">
+        <div className="hidden md:flex flex-row font-semibold mb-2 px-2">
+          <h4 className="w-36">Name</h4>
+          <h4 className="w-48">Description</h4>
+          <h4 className="w-24">Price</h4>
+          <h4 className="w-28">Image</h4>
+          <h4 className="w-24">Action</h4>
         </div>
         {items.length > 0 ? (
           items.map((item) => (
-            
-            <div key={item.id} className="items-Display" style={{ border: "1px solid #ddd", padding: "10px", marginBottom: "10px" }}>
-              <h6>{item.name}</h6>
-              <p>{item.description}</p>
-              <p>Price: ${item.price}</p>
-              { /*{item.imageUrl && <img src={item.imageUrl} alt={item.name} style={{ width: "100px" }} />} */}
+            <div key={item.id} className="flex flex-col md:flex-row items-center justify-between md:justify-start border border-gray-300 p-2.5 mb-2.5 rounded bg-white gap-2">
+              <h6 className="w-full md:w-36 text-base font-semibold">{item.name}</h6>
+              <p className="w-full md:w-48 text-sm text-gray-700 truncate" title={item.description}>
+                {item.description}
+              </p>
+              <p className="w-full md:w-24 text-sm font-medium">${item.price}</p>
               {item.image && (
                 <img
                   src={`data:image/jpeg;base64,${item.image}`}
                   alt={item.name}
-                  style={{ width: "100px" }}
+                  className="w-24 h-24 md:w-28 object-cover rounded"
                 />
               )}
-
-              <button className="delete-button" onClick={() => handleDeleteItem(item.id)}>Delete</button>
+              <button
+                className="h-8 bg-red-500 hover:bg-red-600 border-none text-white px-3 rounded cursor-pointer transition-colors w-full md:w-24"
+                onClick={() => handleDeleteItem(item.id)}
+              >
+                Delete
+              </button>
             </div>
           ))
         ) : (
-          <p>No items found.</p>
+          <p className="text-center text-gray-600">No items found.</p>
         )}
       </div>
     </div>
   );
-};
+}
 
 export default Admin;

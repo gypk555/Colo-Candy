@@ -34,14 +34,12 @@ const login = async (req, res) => {
   }
 };
 
-var count=0;
 // Check if user is logged in
 const checkSession = (req, res) => {
-  count++;
-  console.log("recieved api request to verify the user session logincontroller.js line 41 ", count);
-  console.log("this is req.session.user log detail, logincontroller.js line 42 ",req.session.user);
+  console.log("received api request to verify the user session");
+  console.log("this is req.session.user log detail:",req.session.user);
   if (req.session.user) {
-    console.log("this is console log of user role in line 44 in logincontroller.js ",req.session.user.role);
+    console.log("this is console log of user role:",req.session.user.role);
     res.json({ loggedIn: true, user: req.session.user });
   } else {
     res.json({ loggedIn: false });
