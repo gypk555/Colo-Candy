@@ -40,26 +40,29 @@ export const usernameAtom = atom(
   }
 );
 
-// Auth actions atom - provides helper functions
-export const authActionsAtom = atom(
+// Login action - write-only atom
+export const loginAtom = atom(
   null,
-  (get, set) => ({
-    // Login action
-    login: (userData) => {
-      set(userAtom, userData);
-    },
+  (get, set, userData) => {
+    set(userAtom, userData);
+  }
+);
 
-    // Logout action
-    logout: () => {
-      set(userAtom, null);
-    },
+// Logout action - write-only atom
+export const logoutAtom = atom(
+  null,
+  (get, set) => {
+    set(userAtom, null);
+  }
+);
 
-    // Update user details
-    updateUser: (updates) => {
-      const currentUser = get(userAtom);
-      if (currentUser) {
-        set(userAtom, { ...currentUser, ...updates });
-      }
+// Update user action - write-only atom
+export const updateUserAtom = atom(
+  null,
+  (get, set, updates) => {
+    const currentUser = get(userAtom);
+    if (currentUser) {
+      set(userAtom, { ...currentUser, ...updates });
     }
-  })
+  }
 );
