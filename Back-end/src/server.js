@@ -3,9 +3,12 @@ import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
+import mongoose from 'mongoose';
 // import pgSession from "connect-pg-simple";
 import pool from "./config/db.js";
 import itemRoutes from "./routes/item.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 // Test database connection
 try {
@@ -15,10 +18,21 @@ try {
   console.error('Database connection failed:', error);
   process.exit(1);
 }
+// MongoDB Connection (for user profile features)
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/colo-candy')
+  .then(() => {
+    console.log('✅ MongoDB Connected');
+  })
+  .catch((err) => {
+    console.error('⚠️  MongoDB Connection Note:', err.message);
+    console.log('    Continuing with PostgreSQL for existing features');
+  });
+
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
 // Configure CORS to allow credentials
@@ -48,7 +62,27 @@ app.use(
 );
 
 
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'Server running',
+    timestamp: new Date(),
+    uptime: process.uptime()
+  });
+});
+
+// API Routes
 app.use("/api", itemRoutes);
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {

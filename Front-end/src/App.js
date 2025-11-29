@@ -13,6 +13,8 @@ import Cart from "./components/pages/Cart/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { userAtom, isLoggedInAtom } from "./atoms/authAtoms";
 import { useCartSync } from "./hooks/useCartSync";
+import Settings from "./components/pages/Settings/Settings";
+import ForgotPassword from "./components/pages/ForgotPassword/ForgotPassword";
 
 function App() {
   const [user, setUser] = useAtom(userAtom);
@@ -51,12 +53,27 @@ function App() {
           <Routes>
             <Route path="/" element={<ProductGrid />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/cart" element={<Cart />} />
-
-            {/* Prevent logged-in users from accessing the Register page */}
             <Route
-              path="/register"
-              element={isLoggedIn ? <Navigate to="/" /> : <Register />}
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <div className="flex flex-col items-center justify-center min-h-[80vh] p-5">
+                    <h2 className="text-2xl font-bold mb-2">Orders</h2>
+                    <p className="text-gray-600">Your orders will appear here</p>
+                  </div>
+                </ProtectedRoute>
+              }
             />
 
             {/* Protected Admin Route */}

@@ -5,6 +5,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { isLoggedInAtom, userRoleAtom, loginAtom } from "../../../atoms/authAtoms";
 import { cartAtom, cartDirtyAtom } from "../../../atoms/cartAtoms";
 import { fetchCartFromBackend, mergeCarts, syncCartToBackend } from "../../../services/cartSyncService";
+import { getGoogleAuthURL } from "../../../services/authService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -126,12 +127,40 @@ const Login = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
 
+        <div className="flex justify-between items-center text-sm">
+          <button
+            type="button"
+            className="bg-transparent text-blue-600 border-none cursor-pointer hover:underline"
+            onClick={() => navigate("/forgot-password")}
+          >
+            Forgot Password?
+          </button>
+          <button
+            type="button"
+            className="bg-transparent text-gray-600 border-none cursor-pointer hover:underline"
+            onClick={() => navigate("/register")}
+          >
+            Register here
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-4">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="text-gray-500 text-xs">OR</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* Google Login */}
         <button
           type="button"
-          className="bg-transparent text-black border-none h-8 cursor-pointer hover:underline"
-          onClick={() => navigate("/register")}
+          onClick={() => {
+            const googleAuthURL = getGoogleAuthURL();
+            window.location.href = googleAuthURL;
+          }}
+          className="w-full p-2.5 border border-gray-300 rounded cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium"
         >
-          Don't have an account? Register
+          <span>🔵</span> Continue with Google
         </button>
       </form>
     </div>
