@@ -24,6 +24,7 @@ We use Jotai for state management to avoid prop drilling and ensure synchronizat
 {
   username: string,
   role: string, // 'admin' | 'user'
+  id: number,
   // ... other user fields
 }
 ```
@@ -70,32 +71,32 @@ const username = useAtomValue(usernameAtom);
 
 ---
 
-### Action Atom
+### Action Atoms (Write-only)
 
-#### `authActionsAtom`
+#### `loginAtom`
 **Type:** Write-only atom
-**Description:** Provides authentication action functions.
+**Description:** Sets the user data after successful authentication.
 
-**Available Actions:**
-
-##### `login(userData)`
-Sets the user data after successful authentication.
 ```javascript
-const { login } = useSetAtom(authActionsAtom);
-login({ username: 'john', role: 'admin' });
+const login = useSetAtom(loginAtom);
+login({ username: 'john', role: 'admin', id: 1 });
 ```
 
-##### `logout()`
-Clears all user data (sets to null).
+#### `logoutAtom`
+**Type:** Write-only atom
+**Description:** Clears all user data (sets to null).
+
 ```javascript
-const { logout } = useSetAtom(authActionsAtom);
+const logout = useSetAtom(logoutAtom);
 logout();
 ```
 
-##### `updateUser(updates)`
-Updates specific user fields while preserving others.
+#### `updateUserAtom`
+**Type:** Write-only atom
+**Description:** Updates specific user fields while preserving others.
+
 ```javascript
-const { updateUser } = useSetAtom(authActionsAtom);
+const updateUser = useSetAtom(updateUserAtom);
 updateUser({ email: 'newemail@example.com' });
 ```
 
@@ -107,10 +108,10 @@ updateUser({ email: 'newemail@example.com' });
 
 ```javascript
 import { useSetAtom } from "jotai";
-import { authActionsAtom } from "../atoms/authAtoms";
+import { loginAtom } from "../atoms/authAtoms";
 
 const Login = () => {
-  const { login } = useSetAtom(authActionsAtom);
+  const login = useSetAtom(loginAtom);
 
   const handleLogin = async (credentials) => {
     const response = await axios.post('/api/login', credentials);
@@ -125,13 +126,13 @@ const Login = () => {
 
 ```javascript
 import { useAtomValue, useSetAtom } from "jotai";
-import { isLoggedInAtom, isAdminAtom, usernameAtom, authActionsAtom } from "../atoms/authAtoms";
+import { isLoggedInAtom, isAdminAtom, usernameAtom, logoutAtom } from "../atoms/authAtoms";
 
 const Navbar = () => {
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const username = useAtomValue(usernameAtom);
-  const { logout } = useSetAtom(authActionsAtom);
+  const logout = useSetAtom(logoutAtom);
 
   return (
     <nav>
@@ -278,5 +279,6 @@ export const searchHistoryAtom = atomWithStorage('searchHistory', []);
 
 - The `userAtom` uses `atomWithStorage` which syncs with localStorage
 - Derived atoms automatically update when their dependencies change
-- Actions in `authActionsAtom` provide a clean API for state mutations
+- Action atoms (`loginAtom`, `logoutAtom`, `updateUserAtom`) are write-only atoms
 - All atoms are exported from a single file for easy imports
+- Each action atom takes specific parameters when called with `useSetAtom`
