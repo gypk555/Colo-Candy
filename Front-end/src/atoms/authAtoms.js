@@ -66,3 +66,43 @@ export const updateUserAtom = atom(
     }
   }
 );
+
+// Get user profile image
+export const userProfileImageAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.profileImage || null;
+  }
+);
+
+// Get user email
+export const userEmailAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.email || '';
+  }
+);
+
+// Get user phone number
+export const userPhoneAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.phone || '';
+  }
+);
+
+// Get user address
+export const userAddressAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.address || null;
+  }
+);
+
+// Get full name
+export const userFullNameAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.fullname || '';
+  }
+);

@@ -36,9 +36,10 @@ const ProductDetails = () => {
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
+    const brandText = product.brand ? ` by ${product.brand}` : '';
     const shareData = {
       title: product.name,
-      text: `Check out ${product.name} - INR ${product.price}`,
+      text: `Check out ${product.name}${brandText} - ₹${product.price}`,
       url: shareUrl
     };
 
@@ -89,9 +90,28 @@ const ProductDetails = () => {
       </div>
 
       <div className="flex-1 p-5 w-full md:w-auto md:text-left text-center">
+        {/* Brand Name */}
+        {product.brand && (
+          <p className="text-sm md:text-base text-gray-500 font-semibold mb-2">
+            Brand: <span className="text-gray-700 font-bold">{product.brand}</span>
+          </p>
+        )}
+
+        {/* Product Name */}
         <h2 className="text-2xl md:text-3xl font-bold mb-3">{product.name}</h2>
-        <p className="text-xl md:text-2xl font-bold text-green-600 mb-4">INR {product.price}</p>
+
+        {/* Price */}
+        <p className="text-xl md:text-2xl font-bold text-green-600 mb-4">₹{product.price}</p>
+
+        {/* Description */}
         <p className="text-gray-700 mb-6 leading-relaxed">{product.description}</p>
+
+        {/* Availability */}
+        {product.available !== undefined && (
+          <p className={`text-base font-semibold mb-4 ${product.available ? 'text-green-600' : 'text-red-600'}`}>
+            {product.available ? '✓ In Stock' : '✗ Out of Stock'}
+          </p>
+        )}
 
         {showMessage && (
           <div

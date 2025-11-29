@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getGoogleAuthURL } from "../../../services/authService";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -189,10 +190,29 @@ const Register = () => {
 
         <button
           type="button"
-          className="bg-transparent text-black border-none h-8 cursor-pointer hover:underline"
+          className="bg-transparent text-blue-600 border-none h-8 cursor-pointer hover:underline text-sm"
           onClick={() => navigate("/login")}
         >
           Already have account? Sign in
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-4">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="text-gray-500 text-xs">OR</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* Google Signup */}
+        <button
+          type="button"
+          onClick={() => {
+            const googleAuthURL = getGoogleAuthURL();
+            window.location.href = googleAuthURL;
+          }}
+          className="w-full p-2.5 border border-gray-300 rounded cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium"
+        >
+          <span>🔵</span> Sign up with Google
         </button>
       </form>
     </div>
