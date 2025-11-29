@@ -216,7 +216,7 @@
 ### 4.1 Google OAuth Setup
 - [ ] Create Google OAuth app in Google Cloud Console
 - [ ] Get CLIENT_ID and CLIENT_SECRET
-- [ ] Set redirect URI: `http://localhost:5000/auth/google/callback`
+- [ ] Set redirect URI: `http://localhost:10000/auth/google/callback`
 - [ ] Add to `.env` file
 
 ### 4.2 Google Callback Endpoint
@@ -244,7 +244,7 @@
 ### 5.1 Environment Variables
 - [ ] Add `.env.local` to frontend:
   ```
-  REACT_APP_API_URL=http://localhost:5000
+  REACT_APP_API_URL=http://localhost:10000
   REACT_APP_GOOGLE_CLIENT_ID=your_client_id
   REACT_APP_LOGIN_URL=/auth/login
   REACT_APP_LOGOUT_URL=/auth/logout

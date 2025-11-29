@@ -197,7 +197,7 @@ The user object now includes:
 Add to `.env` file:
 ```
 REACT_APP_GOOGLE_CLIENT_ID=your_google_oauth_client_id
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:10000
 ```
 
 ## Testing Checklist

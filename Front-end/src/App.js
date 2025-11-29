@@ -15,6 +15,7 @@ import { userAtom, isLoggedInAtom } from "./atoms/authAtoms";
 import { useCartSync } from "./hooks/useCartSync";
 import Settings from "./components/pages/Settings/Settings";
 import ForgotPassword from "./components/pages/ForgotPassword/ForgotPassword";
+import GoogleOAuthCallback from "./components/pages/GoogleOAuthCallback/GoogleOAuthCallback";
 
 function App() {
   const [user, setUser] = useAtom(userAtom);
@@ -55,6 +56,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/google/callback" element={<GoogleOAuthCallback />} />
             <Route path="/cart" element={<Cart />} />
             <Route
               path="/settings"

@@ -27,7 +27,7 @@ You now have a complete frontend implementation of the user profile and authenti
    ```bash
    npm install -D nodemon
    npm run dev
-   # Visit: http://localhost:5000/health
+   # Visit: http://localhost:10000/health
    ```
 
 4. **Create First Model** (10 min)
@@ -193,7 +193,7 @@ Priority: CRITICAL
 Time: 4 hours
 Tasks:
 - [ ] Update .env.local in frontend:
-  REACT_APP_API_URL=http://localhost:5000
+  REACT_APP_API_URL=http://localhost:10000
   REACT_APP_GOOGLE_CLIENT_ID=your_id
 - [ ] Verify API URLs correct
 - [ ] Test basic connectivity
@@ -396,7 +396,7 @@ npm install -D nodemon
 MONGODB_URI=mongodb://localhost:27017/colo-candy
 JWT_SECRET=your_random_secret_key
 FRONTEND_URL=http://localhost:3000
-PORT=5000
+PORT=10000
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
 GOOGLE_CLIENT_ID=your_client_id

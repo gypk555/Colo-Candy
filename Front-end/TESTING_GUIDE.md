@@ -4,7 +4,7 @@
 
 ### Prerequisites
 - Frontend running on: `http://localhost:3000`
-- Backend running on: `http://localhost:5000`
+- Backend running on: `http://localhost:10000`
 - MongoDB running locally or connected via Atlas
 - Postman installed (for API testing)
 - Test email account created
@@ -17,7 +17,7 @@
 **Test**: Basic server connectivity
 
 ```
-GET http://localhost:5000/health
+GET http://localhost:10000/health
 
 Expected Response: 200 OK
 {
@@ -29,7 +29,7 @@ Expected Response: 200 OK
 
 #### Step 1: Request OTP
 ```
-POST http://localhost:5000/auth/forgot-password
+POST http://localhost:10000/auth/forgot-password
 Content-Type: application/json
 
 {
@@ -52,7 +52,7 @@ Expected Response: 200 OK
 
 #### Step 2: Verify OTP
 ```
-POST http://localhost:5000/auth/verify-otp
+POST http://localhost:10000/auth/verify-otp
 Content-Type: application/json
 
 {
@@ -77,7 +77,7 @@ Expected Response: 200 OK
 
 #### Step 3: Reset Password
 ```
-POST http://localhost:5000/auth/reset-password
+POST http://localhost:10000/auth/reset-password
 Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 Content-Type: application/json
 
