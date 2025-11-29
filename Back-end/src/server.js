@@ -3,7 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
-import mongoose from 'mongoose';
+import os from 'os';
 // import pgSession from "connect-pg-simple";
 import pool from "./config/db.js";
 import itemRoutes from "./routes/item.js";
@@ -13,20 +13,11 @@ import userRoutes from "./routes/userRoutes.js";
 // Test database connection
 try {
   await pool.query('SELECT NOW()');
-  console.log('Database connected successfully');
+  console.log('✅ PostgreSQL Database connected successfully');
 } catch (error) {
   console.error('Database connection failed:', error);
   process.exit(1);
 }
-// MongoDB Connection (for user profile features)
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/colo-candy')
-  .then(() => {
-    console.log('✅ MongoDB Connected');
-  })
-  .catch((err) => {
-    console.error('⚠️  MongoDB Connection Note:', err.message);
-    console.log('    Continuing with PostgreSQL for existing features');
-  });
 
 const app = express();
 
@@ -36,8 +27,29 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
 // Configure CORS to allow credentials
+// Get local IP for phone access
+const getLocalIP = () => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return 'localhost';
+};
+
+const localIP = getLocalIP();
+const allowedOrigins = [
+  "http://localhost:3000",
+  `http://${localIP}:3000`,
+  `http://127.0.0.1:3000`,
+  "https://colo-candy.onrender.com"
+];
+
 app.use(cors({
-  origin: ["http://localhost:3000", "https://colo-candy.onrender.com"], // Allow both local and deployed frontend
+  origin: allowedOrigins,
   credentials: true,
 }));
 
@@ -86,5 +98,7 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`\n✅ Server running on port ${PORT}`);
+  console.log(`📱 Access from phone: http://${localIP}:${PORT}`);
+  console.log(`🖥️  Access from laptop: http://localhost:${PORT}\n`);
 });

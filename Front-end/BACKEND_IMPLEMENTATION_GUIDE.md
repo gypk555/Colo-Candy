@@ -587,7 +587,7 @@ JWT_EXPIRE=24h
 # Google OAuth
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
+GOOGLE_CALLBACK_URL=http://localhost:10000/auth/google/callback
 
 # Cloud Storage
 AWS_ACCESS_KEY_ID=your-access-key
@@ -596,7 +596,7 @@ AWS_S3_BUCKET=colo-candy-images
 
 # App
 FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:5000
+BACKEND_URL=http://localhost:10000
 ```
 
 ## 9. Testing Endpoints

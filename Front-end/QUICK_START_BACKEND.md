@@ -43,7 +43,7 @@ app.get('/health', (req, res) => {
 });
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
@@ -54,7 +54,7 @@ app.listen(PORT, () => {
 MONGODB_URI=mongodb://localhost:27017/colo-candy
 JWT_SECRET=your_secret_key_here
 FRONTEND_URL=http://localhost:3000
-PORT=5000
+PORT=10000
 
 # Email
 EMAIL_USER=your-email@gmail.com
@@ -77,7 +77,7 @@ In `package.json`:
 ### Step 5: Run Server
 ```bash
 npm run dev
-# Navigate to http://localhost:5000/health
+# Navigate to http://localhost:10000/health
 ```
 
 ---
@@ -395,7 +395,7 @@ app.use('/auth', authRoutes);
 
 #### 1. Test Forgot Password
 ```
-POST http://localhost:5000/auth/forgot-password
+POST http://localhost:10000/auth/forgot-password
 Content-Type: application/json
 
 {
@@ -413,7 +413,7 @@ Content-Type: application/json
 
 #### 2. Test Verify OTP
 ```
-POST http://localhost:5000/auth/verify-otp
+POST http://localhost:10000/auth/verify-otp
 Content-Type: application/json
 
 {
@@ -433,7 +433,7 @@ Content-Type: application/json
 
 #### 3. Test Reset Password
 ```
-POST http://localhost:5000/auth/reset-password
+POST http://localhost:10000/auth/reset-password
 Authorization: Bearer jwt_token_here
 Content-Type: application/json
 

@@ -268,7 +268,7 @@ POST /auth/google/callback
 ## Environment Variables Required
 
 ```env
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:10000
 REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 REACT_APP_FORGOT_PASSWORD_URL=/auth/forgot-password
 REACT_APP_VERIFY_OTP_URL=/auth/verify-otp

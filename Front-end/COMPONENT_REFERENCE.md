@@ -491,14 +491,14 @@ src/
 
 ### Environment Variables
 ```env
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:10000
 REACT_APP_GOOGLE_CLIENT_ID=your_client_id
 ```
 
 ### API Base URL
 - Configured in `authService.js`
 - Uses `process.env.REACT_APP_API_URL`
-- Fallback: `http://localhost:5000`
+- Fallback: `http://localhost:10000`
 
 ## Performance Optimization
 
