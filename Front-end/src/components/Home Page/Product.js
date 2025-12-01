@@ -49,6 +49,7 @@ const ProductGrid = () => {
       setError("");
       const response = await axios.get(process.env.REACT_APP_ADMIN_URL);
       setProductsData(response.data);
+      console.log("products list ", response.data);
     } catch (error) {
       setError("Failed to load products. Please try again later.");
     } finally {

@@ -12,12 +12,12 @@ const getCartByUserId = async (userId) => {
         c.id as cart_item_id,
         c.product_id as id,
         c.quantity,
-        p.name,
-        p.price,
-        p.description,
-        p.image
+        I.name,
+        I.price,
+        I.description,
+        I.image
       FROM cart_items c
-      JOIN products p ON c.product_id = p.product_id
+      JOIN items I ON c.product_id = I.product_id
       WHERE c.user_id = $1
       ORDER BY c.created_at DESC
     `;

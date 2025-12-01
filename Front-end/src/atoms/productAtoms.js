@@ -18,7 +18,7 @@ export const sortByAtom = atom('');
 // Active filters
 export const activeFiltersAtom = atom({
   brands: [], // Array of selected brand names
-  priceRange: null, // { min, max }
+  priceRanges: [], // Array of selected price ranges [{ min, max }, ...]
   availability: null, // true/false or null
 });
 
@@ -38,23 +38,37 @@ export const filterOptionsAtom = atom((get) => {
   const minPrice = Math.floor(prices[0]);
   const maxPrice = Math.ceil(prices[prices.length - 1]);
 
-  // Generate price ranges: 0-500, 500-1000, 1000-1500, etc.
+  // Generate price ranges with smart intervals
   const priceRanges = [];
-  const interval = 500;
+  const priceRange = maxPrice - minPrice;
 
+  // Determine interval based on price range
+  let interval;
+  if (priceRange <= 1000) {
+    interval = 100;
+  } else if (priceRange <= 5000) {
+    interval = 500;
+  } else if (priceRange <= 20000) {
+    interval = 1000;
+  } else {
+    interval = 5000;
+  }
+
+  // Generate ranges starting from minPrice
   for (let i = minPrice; i < maxPrice; i += interval) {
+    const rangeMax = Math.min(i + interval - 1, maxPrice);
     priceRanges.push({
-      label: `${i} - ${Math.min(i + interval - 1, maxPrice)}`,
+      label: `${i.toLocaleString('en-IN')} - ${rangeMax.toLocaleString('en-IN')}`,
       min: i,
-      max: Math.min(i + interval - 1, maxPrice)
+      max: rangeMax
     });
   }
 
-  // Add final range for remaining prices
-  if (maxPrice > minPrice && priceRanges[priceRanges.length - 1]?.max < maxPrice) {
+  // Ensure we have at least the full range option
+  if (priceRanges.length === 0) {
     priceRanges.push({
-      label: `${priceRanges[priceRanges.length - 1]?.max + 1}+`,
-      min: priceRanges[priceRanges.length - 1]?.max + 1,
+      label: `${minPrice.toLocaleString('en-IN')} - ${maxPrice.toLocaleString('en-IN')}`,
+      min: minPrice,
       max: maxPrice
     });
   }
@@ -85,11 +99,12 @@ export const filteredProductsAtom = atom((get) => {
     );
   }
 
-  // Apply price filter
-  if (filters.priceRange) {
+  // Apply price filter (supports multiple price ranges)
+  if (filters.priceRanges.length > 0) {
     filtered = filtered.filter(product =>
-      product.price >= filters.priceRange.min &&
-      product.price <= filters.priceRange.max
+      filters.priceRanges.some(range =>
+        product.price >= range.min && product.price <= range.max
+      )
     );
   }
 
@@ -155,14 +170,26 @@ export const toggleBrandFilterAtom = atom(
   }
 );
 
-// Set price range filter
+// Toggle price range filter (supports multiple selections)
 export const setPriceRangeAtom = atom(
   null,
   (get, set, priceRange) => {
     const filters = get(activeFiltersAtom);
+    const priceRanges = filters.priceRanges;
+
+    // Check if this range is already selected
+    const isAlreadySelected = priceRanges.some(r =>
+      r.min === priceRange.min && r.max === priceRange.max
+    );
+
+    // Toggle: add if not selected, remove if already selected
+    const updatedPriceRanges = isAlreadySelected
+      ? priceRanges.filter(r => !(r.min === priceRange.min && r.max === priceRange.max))
+      : [...priceRanges, priceRange];
+
     set(activeFiltersAtom, {
       ...filters,
-      priceRange
+      priceRanges: updatedPriceRanges
     });
   }
 );
@@ -185,7 +212,7 @@ export const clearFiltersAtom = atom(
   (get, set) => {
     set(activeFiltersAtom, {
       brands: [],
-      priceRange: null,
+      priceRanges: [],
       availability: null
     });
     set(searchQueryAtom, '');

@@ -5,11 +5,11 @@ const getItems = async () => {
   return result.rows;
 };
 
-const addItem = async (name, description, price, image) => {
+const addItem = async (name, description, price, image, brand) => {
   console.log("Inserting item into database");
   const result = await pool.query(
-    "INSERT INTO items (name, description, price, image) VALUES ($1, $2, $3, $4) RETURNING *",
-    [name, description, price, image]
+    "INSERT INTO items (name, description, price, image, brand) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [name, description, price, image, brand]
   );
   return result.rows[0];
 };
