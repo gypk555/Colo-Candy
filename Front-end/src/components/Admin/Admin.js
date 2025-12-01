@@ -7,6 +7,7 @@ function Admin() {
     name: "",
     description: "",
     price: "",
+    brand: "",
     image: null,
   });
   const [error, setError] = useState("");
@@ -34,6 +35,7 @@ function Admin() {
     formData.append("name", newItem.name);
     formData.append("description", newItem.description);
     formData.append("price", newItem.price);
+    formData.append("brand", newItem.brand);
     formData.append("image", newItem.image);
 
     try {
@@ -42,7 +44,7 @@ function Admin() {
       });
       setSuccess("Item added successfully!");
       fetchItems();
-      setNewItem({ name: "", description: "", price: "", image: null });
+      setNewItem({ name: "", description: "", price: "", brand: "", image: null });
       // Clear file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = "";
@@ -136,6 +138,15 @@ function Admin() {
           className="h-12 rounded border-2 border-cyan-200 px-2 py-1 outline-none focus:border-cyan-400 resize-none"
         />
         <input
+          type="text"
+          name="brand"
+          placeholder="Brand Name"
+          value={newItem.brand}
+          onChange={handleInputChange}
+          required
+          className="h-8 rounded border-2 border-cyan-200 px-2 outline-none focus:border-cyan-400"
+        />
+        <input
           type="number"
           name="price"
           placeholder="Item Price"
@@ -167,20 +178,22 @@ function Admin() {
       <h3 className="text-xl font-semibold mb-3">Manage Items</h3>
       <div className="w-full max-w-6xl">
         <div className="hidden md:flex flex-row font-semibold mb-2 px-2">
-          <h4 className="w-36">Name</h4>
-          <h4 className="w-48">Description</h4>
-          <h4 className="w-24">Price</h4>
+          <h4 className="w-28">Name</h4>
+          <h4 className="w-20">Brand</h4>
+          <h4 className="w-40">Description</h4>
+          <h4 className="w-20">Price</h4>
           <h4 className="w-28">Image</h4>
           <h4 className="w-24">Action</h4>
         </div>
         {items.length > 0 ? (
           items.map((item) => (
             <div key={item.id} className="flex flex-col md:flex-row items-center justify-between md:justify-start border border-gray-300 p-2.5 mb-2.5 rounded bg-white gap-2">
-              <h6 className="w-full md:w-36 text-base font-semibold">{item.name}</h6>
-              <p className="w-full md:w-48 text-sm text-gray-700 truncate" title={item.description}>
+              <h6 className="w-full md:w-28 text-base font-semibold">{item.name}</h6>
+              <p className="w-full md:w-20 text-sm font-medium text-blue-600">{item.brand || 'N/A'}</p>
+              <p className="w-full md:w-40 text-sm text-gray-700 truncate" title={item.description}>
                 {item.description}
               </p>
-              <p className="w-full md:w-24 text-sm font-medium">${item.price}</p>
+              <p className="w-full md:w-20 text-sm font-medium">${item.price}</p>
               {item.image && (
                 <img
                   src={`data:image/jpeg;base64,${item.image}`}

@@ -20,11 +20,11 @@ const getAllItems = async (req, res) => {
 const createItem = async (req, res) => {
   try {
     console.log("api request received");
-    const { name, description, price } = req.body;
+    const { name, description, price, brand } = req.body;
     const image = req.file ? req.file.buffer : null; // Extract image from multer
-    console.log("Data received:", { name, description, price, imageSize: image?.length });
+    console.log("Data received:", { name, description, price, brand, imageSize: image?.length });
 
-    const newItem = await addItem(name, description, price, image);
+    const newItem = await addItem(name, description, price, brand, image);
     res.status(201).json(newItem);
   } catch (error) {
     console.log("Error in createItem:", error.message);

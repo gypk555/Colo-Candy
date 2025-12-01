@@ -34,10 +34,12 @@ const FilterPanel = ({ isOpen, onClose }) => {
   };
 
   const handlePriceChange = (priceRange) => {
-    setPriceRange(
-      filters.priceRange?.min === priceRange.min && filters.priceRange?.max === priceRange.max
-        ? null
-        : priceRange
+    setPriceRange(priceRange);
+  };
+
+  const isPriceRangeSelected = (priceRange) => {
+    return filters.priceRanges.some(r =>
+      r.min === priceRange.min && r.max === priceRange.max
     );
   };
 
@@ -45,7 +47,7 @@ const FilterPanel = ({ isOpen, onClose }) => {
     setAvailability(filters.availability === value ? null : value);
   };
 
-  const hasActiveFilters = filters.brands.length > 0 || filters.priceRange || filters.availability !== null;
+  const hasActiveFilters = filters.brands.length > 0 || filters.priceRanges.length > 0 || filters.availability !== null;
 
   return (
     <>
@@ -124,7 +126,7 @@ const FilterPanel = ({ isOpen, onClose }) => {
                   <label key={idx} className="flex items-center cursor-pointer group">
                     <input
                       type="checkbox"
-                      checked={filters.priceRange?.min === range.min && filters.priceRange?.max === range.max}
+                      checked={isPriceRangeSelected(range)}
                       onChange={() => handlePriceChange(range)}
                       className="w-4 h-4 accent-blue-600 cursor-pointer"
                     />
@@ -202,8 +204,8 @@ const FilterPanel = ({ isOpen, onClose }) => {
         {hasActiveFilters && (
           <div className="mt-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-gray-600 mb-2">
-              <span className="font-semibold">{`${filters.brands.length > 0 ? filters.brands.length : ''} ${filters.brands.length > 0 ? 'brand' : ''} ${filters.brands.length > 1 ? 's' : ''}${filters.priceRange ? ', price' : ''}${filters.availability !== null ? ', availability' : ''}`}
-                Active Filter{(filters.brands.length + (filters.priceRange ? 1 : 0) + (filters.availability !== null ? 1 : 0)) > 1 ? 's' : ''}
+              <span className="font-semibold">{`${filters.brands.length > 0 ? filters.brands.length : ''} ${filters.brands.length > 0 ? 'brand' : ''} ${filters.brands.length > 1 ? 's' : ''}${filters.priceRanges.length > 0 ? ', price' : ''}${filters.availability !== null ? ', availability' : ''}`}
+                Active Filter{(filters.brands.length + (filters.priceRanges.length > 0 ? 1 : 0) + (filters.availability !== null ? 1 : 0)) > 1 ? 's' : ''}
               </span>
             </p>
           </div>
