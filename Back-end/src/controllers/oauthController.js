@@ -61,7 +61,7 @@ export const googleCallback = async (req, res) => {
       const result = await pool.query(
         `INSERT INTO users (fullname, username, email, mobile, password, emailverified, googleid)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, fullname, username, email, mobile, password, emailverified, googleid, role`,
+         RETURNING user_id, fullname, username, email, mobile, password, emailverified, googleid, role`,
         [
           googleUser.name || 'Google User',
           username,
