@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getGoogleAuthURL } from "../../../services/authService";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Register = () => {
     c_password: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const validatePassword = (password) => {
@@ -61,8 +63,9 @@ const Register = () => {
       if (res.data === 'error' || res.data === "Username already exists.Please choose different one") {
         setError(res.data);
       } else {
-        alert("Registration successful! Please log in.");
-        navigate("/login");
+        setSuccess("Registration successful! Redirecting to login...");
+        // Redirect to login after 2 seconds
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Registration failed. Please try again.";
@@ -89,6 +92,12 @@ const Register = () => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             <span className="block sm:inline">{error}</span>
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span className="block sm:inline">{success}</span>
           </div>
         )}
 
@@ -181,10 +190,29 @@ const Register = () => {
 
         <button
           type="button"
-          className="bg-transparent text-black border-none h-8 cursor-pointer hover:underline"
+          className="bg-transparent text-blue-600 border-none h-8 cursor-pointer hover:underline text-sm"
           onClick={() => navigate("/login")}
         >
           Already have account? Sign in
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-4">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="text-gray-500 text-xs">OR</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* Google Signup */}
+        <button
+          type="button"
+          onClick={() => {
+            const googleAuthURL = getGoogleAuthURL();
+            window.location.href = googleAuthURL;
+          }}
+          className="w-full p-2.5 border border-gray-300 rounded cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium"
+        >
+          <span>🔵</span> Sign up with Google
         </button>
       </form>
     </div>
