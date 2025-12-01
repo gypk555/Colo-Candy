@@ -205,25 +205,7 @@ Access to XMLHttpRequest at 'http://192.168.1.100:10000/...'
 from origin 'http://192.168.1.100:3000' has been blocked by CORS policy
 ```
 
-**Solution:** Make sure backend CORS includes your IP
 
-### ✓ Environment Variables
-
-Make sure `.env` files have:
-
-**Backend (`Back-end/.env`):**
-```env
-GOOGLE_CLIENT_ID=YOUR_CLIENT_ID
-GOOGLE_CLIENT_SECRET=YOUR_SECRET
-FRONTEND_URL=http://localhost:3000
-PORT=10000
-```
-
-**Frontend (`Front-end/.env`):**
-```env
-REACT_APP_API_URL=http://localhost:10000
-REACT_APP_GOOGLE_CLIENT_ID=YOUR_CLIENT_ID
-```
 
 ---
 
