@@ -1,9 +1,10 @@
 import {getItems, addItem, deleteItem} from "../models/itemsModels.js";
+import { compressProductImage } from "../utils/imageCompression.js";
 
 const getAllItems = async (req, res) => {
   try {
     const items = await getItems();
-    
+
     // Convert image buffer to Base64
     const itemsWithBase64Images = items.map(item => ({
       ...item,
@@ -21,7 +22,15 @@ const createItem = async (req, res) => {
   try {
     console.log("api request received");
     const { name, description, price, brand } = req.body;
-    const image = req.file ? req.file.buffer : null; // Extract image from multer
+    let image = req.file ? req.file.buffer : null; // Extract image from multer
+
+    if (image) {
+      console.log(`🖼️ Compressing product image: ${name} (${(image.length / 1024).toFixed(2)} KB)`);
+      // Compress the product image
+      image = await compressProductImage(image, req.file.mimetype);
+      console.log(`✅ Image compressed: (${(image.length / 1024).toFixed(2)} KB)`);
+    }
+
     console.log("Data received:", { name, description, price, brand, imageSize: image?.length });
 
     const newItem = await addItem(name, description, price, brand, image);

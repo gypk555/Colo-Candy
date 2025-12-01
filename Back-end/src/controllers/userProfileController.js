@@ -1,4 +1,12 @@
-import User from '../models/User.js';
+import {
+  getUserById,
+  updateProfileImage,
+  updatePhoneNumber,
+  updateEmailAddress,
+  emailExists,
+  saveAddress as saveUserAddress
+} from '../models/userProfileModel.js';
+import { compressProfileImage } from '../utils/imageCompression.js';
 
 // Get user profile
 export const getUserProfile = async (req, res) => {
@@ -9,16 +17,12 @@ export const getUserProfile = async (req, res) => {
       return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
 
-    const user = await User.findById(userId);
+    const user = await getUserById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Remove password from response
-    const userProfile = user.toObject();
-    delete userProfile.password;
-
-    res.json({ success: true, user: userProfile });
+    res.json({ success: true, user });
   } catch (error) {
     console.error('Get profile error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch profile' });
@@ -45,22 +49,15 @@ export const updatePhone = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please enter a valid 10-digit phone number' });
     }
 
-    const user = await User.findById(userId);
+    const user = await updatePhoneNumber(userId, phone);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    user.phoneNo = phone;
-    user.updatedAt = new Date();
-    await user.save();
-
-    const userProfile = user.toObject();
-    delete userProfile.password;
-
     res.json({
       success: true,
       message: 'Phone number updated successfully',
-      user: userProfile
+      user
     });
   } catch (error) {
     console.error('Update phone error:', error);
@@ -88,30 +85,21 @@ export const updateEmail = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please enter a valid email address' });
     }
 
-    const user = await User.findById(userId);
+    // Check if email already exists for another user
+    const exists = await emailExists(email, userId);
+    if (exists) {
+      return res.status(400).json({ success: false, message: 'Email already in use' });
+    }
+
+    const user = await updateEmailAddress(userId, email);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Check if email already exists
-    if (email !== user.email) {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ success: false, message: 'Email already in use' });
-      }
-    }
-
-    user.email = email;
-    user.updatedAt = new Date();
-    await user.save();
-
-    const userProfile = user.toObject();
-    delete userProfile.password;
-
     res.json({
       success: true,
       message: 'Email updated successfully',
-      user: userProfile
+      user
     });
   } catch (error) {
     console.error('Update email error:', error);
@@ -146,12 +134,7 @@ export const saveAddress = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Zip code must be 6 digits' });
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    user.address = {
+    const address = {
       fullName,
       phoneNumber,
       street,
@@ -161,17 +144,17 @@ export const saveAddress = async (req, res) => {
       country: country || 'India',
       type: type || 'home'
     };
-    user.updatedAt = new Date();
-    await user.save();
 
-    const userProfile = user.toObject();
-    delete userProfile.password;
+    const user = await saveUserAddress(userId, address);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
     res.json({
       success: true,
       message: 'Address saved successfully',
-      address: user.address,
-      user: userProfile
+      address,
+      user
     });
   } catch (error) {
     console.error('Save address error:', error);
@@ -198,32 +181,31 @@ export const uploadProfileImage = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid image type. Allowed: JPG, PNG, GIF, WebP' });
     }
 
-    // Validate file size (max 5MB)
-    if (req.file.size > 5 * 1024 * 1024) {
-      return res.status(400).json({ success: false, message: 'Image size must be less than 5MB' });
+    // Validate file size (max 10MB before compression)
+    if (req.file.size > 10 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'Image size must be less than 10MB' });
     }
 
-    const user = await User.findById(userId);
+    console.log(`📸 Compressing profile image for user ${userId}...`);
+
+    // Compress the image
+    const compressedImage = await compressProfileImage(req.file.buffer, req.file.mimetype);
+
+    // Update user profile with compressed image
+    const user = await updateProfileImage(userId, compressedImage, req.file.mimetype);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Convert file to base64 and store
-    const base64Image = req.file.buffer.toString('base64');
+    // Convert compressed image to base64 for response
+    const base64Image = compressedImage.toString('base64');
     const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
-
-    user.profileImage = imageUrl;
-    user.updatedAt = new Date();
-    await user.save();
-
-    const userProfile = user.toObject();
-    delete userProfile.password;
 
     res.json({
       success: true,
       message: 'Profile image uploaded successfully',
       profileImage: imageUrl,
-      user: userProfile
+      user
     });
   } catch (error) {
     console.error('Upload profile image error:', error);
