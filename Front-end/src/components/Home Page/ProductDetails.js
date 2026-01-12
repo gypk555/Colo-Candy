@@ -1,19 +1,29 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cartAtom, addToCartAtom, removeFromCartAtom } from "../../atoms/cartAtoms";
+import { productsAtom } from "../../atoms/productAtoms";
 
 const ProductDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const product = location.state?.product;
+  const { id } = useParams(); // Get product ID from URL parameter
+
+  // Get ALL products from global atom (always available, even after page refresh)
+  const allProducts = useAtomValue(productsAtom);
+
+  // Find product by ID from the global products store
+  // This works on page refresh, direct URL visit, and navigation
+  const product = allProducts.find(p => String(p.id) === String(id));
+
+  // Get cart and actions
   const cart = useAtomValue(cartAtom);
   const addToCart = useSetAtom(addToCartAtom);
   const removeFromCart = useSetAtom(removeFromCartAtom);
   const [showMessage, setShowMessage] = useState(null);
 
   // Check if product is already in cart
-  const isInCart = cart.some(item => item.id === product?.id);
+  // Normalize IDs to string for consistent comparison
+  const isInCart = product && cart.some(item => String(item.id) === String(product.id));
 
   const handleToggleCart = () => {
     if (isInCart) {

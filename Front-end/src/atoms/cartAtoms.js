@@ -16,11 +16,11 @@ export const cartAtom = atomWithStorage('cart', []);
 // Dirty flag - tracks if cart has unsaved changes
 export const cartDirtyAtom = atom(false);
 
-// Derived atom - total number of items in cart
+// Derived atom - total number of unique items in cart (not sum of quantities)
 export const cartItemCountAtom = atom(
   (get) => {
     const cart = get(cartAtom);
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cart.length; // Return count of unique items, not total quantity
   }
 );
 
@@ -37,7 +37,9 @@ export const addToCartAtom = atom(
   null,
   (get, set, product) => {
     const cart = get(cartAtom);
-    const existingItemIndex = cart.findIndex(item => item.id === product.id);
+    // Normalize IDs to string for consistent comparison
+    const productId = String(product.id);
+    const existingItemIndex = cart.findIndex(item => String(item.id) === productId);
 
     if (existingItemIndex >= 0) {
       // Item already exists, increment quantity
@@ -61,7 +63,9 @@ export const removeFromCartAtom = atom(
   null,
   (get, set, productId) => {
     const cart = get(cartAtom);
-    set(cartAtom, cart.filter(item => item.id !== productId));
+    // Normalize ID to string for consistent comparison
+    const normalizedProductId = String(productId);
+    set(cartAtom, cart.filter(item => String(item.id) !== normalizedProductId));
     // Mark cart as dirty (needs sync)
     set(cartDirtyAtom, true);
   }
@@ -72,12 +76,14 @@ export const updateCartQuantityAtom = atom(
   null,
   (get, set, { productId, quantity }) => {
     const cart = get(cartAtom);
+    // Normalize ID to string for consistent comparison
+    const normalizedProductId = String(productId);
     if (quantity <= 0) {
       // Remove item if quantity is 0 or less
-      set(cartAtom, cart.filter(item => item.id !== productId));
+      set(cartAtom, cart.filter(item => String(item.id) !== normalizedProductId));
     } else {
       const updatedCart = cart.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+        String(item.id) === normalizedProductId ? { ...item, quantity } : item
       );
       set(cartAtom, updatedCart);
     }
@@ -91,7 +97,7 @@ export const clearCartAtom = atom(
   null,
   (get, set) => {
     set(cartAtom, []);
-    // Mark cart as dirty (needs sync)
-    set(cartDirtyAtom, true);
+    // DO NOT set dirty flag - clearing is intentional, not a sync operation
+    set(cartDirtyAtom, false);
   }
 );

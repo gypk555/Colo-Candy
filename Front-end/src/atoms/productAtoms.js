@@ -227,3 +227,14 @@ export const setProductsAtom = atom(
     set(productsAtom, products);
   }
 );
+
+// Get product by ID (derived atom)
+export const getProductByIdAtom = atom(
+  null,
+  (get, productId) => {
+    const products = get(productsAtom);
+    if (!productId) return null;
+    // Normalize both IDs to string for comparison
+    return products.find(p => String(p.id) === String(productId)) || null;
+  }
+);
