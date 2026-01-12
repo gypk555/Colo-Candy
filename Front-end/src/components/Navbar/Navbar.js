@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import axios from "axios";
 import { isLoggedInAtom, isAdminAtom, usernameAtom, logoutAtom, userProfileImageAtom } from "../../atoms/authAtoms";
-import { cartAtom, cartItemCountAtom, cartDirtyAtom } from "../../atoms/cartAtoms";
+import { cartAtom, cartItemCountAtom, cartDirtyAtom, clearCartAtom } from "../../atoms/cartAtoms";
 import { searchQueryAtom, setSearchQueryAtom } from "../../atoms/productAtoms";
 import { syncCartToBackend } from "../../services/cartSyncService";
 import UserProfileOverlay from "../UserProfileOverlay/UserProfileOverlay";
+
+const APP_NAME = "Colo Candy";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ const Navbar = () => {
   const isAdmin = useAtomValue(isAdminAtom);
   const username = useAtomValue(usernameAtom);
   const logout = useSetAtom(logoutAtom);
+  const clearCart = useSetAtom(clearCartAtom);
   const cart = useAtomValue(cartAtom);
   const cartItemCount = useAtomValue(cartItemCountAtom);
   const [isDirty, setIsDirty] = useAtom(cartDirtyAtom);
@@ -31,11 +34,19 @@ const Navbar = () => {
         setIsDirty(false);
       }
 
+      // Call backend logout
       await axios.post(process.env.REACT_APP_LOGOUT_URL, {}, { withCredentials: true });
+
+      // Clear cart state when user logs out
+      clearCart();
+
+      // Clear user state
       logout();
+
       navigate("/");
     } catch (error) {
       // Logout failed, but still clear state and redirect
+      clearCart(); // Clear cart even on error
       logout();
       navigate("/");
     }
@@ -57,7 +68,7 @@ const Navbar = () => {
   return (
     <nav className="flex flex-col md:flex-row items-start md:items-center justify-between bg-zinc-800 text-white px-5 py-2.5">
       <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
-        MyWebsite
+        {APP_NAME}
       </div>
 
       <form className="flex flex-row items-center w-full md:w-auto mt-2.5 md:mt-0" onSubmit={handleSearchSubmit}>

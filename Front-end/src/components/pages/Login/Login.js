@@ -60,7 +60,12 @@ const Login = () => {
       if (success) {
         // Merge localStorage cart with database cart
         const localCart = cart;
+        console.log('[Login] Local cart before merge:', localCart);
+        console.log('[Login] DB cart before merge:', dbCart);
+
         const mergedCart = mergeCarts(localCart, dbCart);
+
+        console.log('[Login] Merged cart:', mergedCart);
 
         // Update local cart with merged data
         setCart(mergedCart);
@@ -68,6 +73,8 @@ const Login = () => {
         // Sync merged cart back to database
         await syncCartToBackend(mergedCart);
         setCartDirty(false); // Mark as clean after sync
+
+        console.log('[Login] Cart merge and sync completed');
       }
 
       // Redirect based on role
