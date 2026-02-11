@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "axios": "^1.13.2",
+    "axios": "^1.13.5",
     "cra-template": "^1.2.0",
     "dotenv": "^17.2.3",
     "jotai": "^2.15.1",
