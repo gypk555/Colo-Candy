@@ -1,0 +1,334 @@
+{
+  "info": {
+    "name": "Colo-Candy API",
+    "description": "API collection for Colo-Candy e-commerce with authentication and user profile management",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:10000",
+      "type": "string"
+    },
+    {
+      "key": "RESET_TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/health",
+          "host": [
+            "localhost"
+          ],
+          "port": "10000",
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Forgot Password - Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/forgot-password",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-otp",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "verify-otp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{RESET_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/reset-password",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"currentPassword123\",\n  \"newPassword\": \"newPassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Google Auth URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/auth/google-auth-url",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "google-auth-url"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Google OAuth Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"GOOGLE_AUTH_CODE_HERE\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/google/callback",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "auth",
+                "google",
+                "callback"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/user/profile",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "user",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Phone Number",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/user/phone",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "user",
+                "phone"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Email",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/user/email",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "user",
+                "email"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Save Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"phoneNumber\": \"9876543210\",\n  \"street\": \"123 Main Street\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"zipCode\": \"100001\",\n  \"country\": \"India\",\n  \"type\": \"home\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/user/address",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "user",
+                "address"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Profile Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profileImage",
+                  "type": "file",
+                  "src": "path/to/image.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/user/upload-profile-image",
+              "host": [
+                "localhost"
+              ],
+              "port": "10000",
+              "path": [
+                "user",
+                "upload-profile-image"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

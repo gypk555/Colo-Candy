@@ -40,26 +40,69 @@ export const usernameAtom = atom(
   }
 );
 
-// Auth actions atom - provides helper functions
-export const authActionsAtom = atom(
+// Login action - write-only atom
+export const loginAtom = atom(
   null,
-  (get, set) => ({
-    // Login action
-    login: (userData) => {
-      set(userAtom, userData);
-    },
+  (get, set, userData) => {
+    set(userAtom, userData);
+  }
+);
 
-    // Logout action
-    logout: () => {
-      set(userAtom, null);
-    },
+// Logout action - write-only atom
+export const logoutAtom = atom(
+  null,
+  (get, set) => {
+    set(userAtom, null);
+  }
+);
 
-    // Update user details
-    updateUser: (updates) => {
-      const currentUser = get(userAtom);
-      if (currentUser) {
-        set(userAtom, { ...currentUser, ...updates });
-      }
+// Update user action - write-only atom
+export const updateUserAtom = atom(
+  null,
+  (get, set, updates) => {
+    const currentUser = get(userAtom);
+    if (currentUser) {
+      set(userAtom, { ...currentUser, ...updates });
     }
-  })
+  }
+);
+
+// Get user profile image
+export const userProfileImageAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.profileImage || null;
+  }
+);
+
+// Get user email
+export const userEmailAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.email || '';
+  }
+);
+
+// Get user phone number
+export const userPhoneAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.phone || '';
+  }
+);
+
+// Get user address
+export const userAddressAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.address || null;
+  }
+);
+
+// Get full name
+export const userFullNameAtom = atom(
+  (get) => {
+    const user = get(userAtom);
+    return user?.fullname || '';
+  }
 );
